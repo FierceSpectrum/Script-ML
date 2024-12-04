@@ -35,9 +35,14 @@ def main():
         validate_env_variables('file_data', 'file_data2', 'directory_data')
 
         # Cargar el archivo de datos
-        file_path  = os.getenv('file_data')
+        file_path = os.getenv('file_data')
         backup_url = os.getenv('file_data2')
         directory_data = os.getenv('directory_data')
+
+        # Validar si el directorio existe o crearlo
+        if not os.path.exists(directory_data):
+            os.makedirs(directory_data)
+            print(f"Directorio creado: {directory_data}")
 
         # Verificar si el archivo de datos existe
         if not os.path.exists(file_path):
@@ -47,12 +52,12 @@ def main():
             print(f"Datos descargado y guardado en: {file_path}")
 
         # Verificar nuevamente si el archivo ahora existe
-        if not os.path.exists(file_path ):
+        if not os.path.exists(file_path):
             raise FileNotFoundError(
                 f"El archivo de datos no existe en: {file_path }")
 
         # Cargar los datos desde el archivo
-        datos = load_data(file_path )
+        datos = load_data(file_path)
 
         # División inicial: 65% para entrenamiento y 35% para validación + prueba
         train_data, temp_data = train_test_split(
@@ -61,11 +66,6 @@ def main():
         # División del conjunto temporal: 30% para validación y 5% para prueba
         validation_data, test_data = train_test_split(
             temp_data, test_size=(5/35), random_state=42)
-
-        # Validar si el directorio existe o crearlo
-        if not os.path.exists(directory_data):
-            os.makedirs(directory_data)
-            print(f"Directorio creado: {directory_data}")
 
         # Guardar cada conjunto en archivos separados
         create_file(train_data, os.path.join(
@@ -76,7 +76,6 @@ def main():
 
         create_file(test_data, os.path.join(
             directory_data, "test_data.csv"))  # 5% de los datos
-
 
         print("\nDatos divididos y guardados exitosamente:")
         print(f"Entrenamiento: {train_data.shape}")
