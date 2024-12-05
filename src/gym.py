@@ -1,9 +1,9 @@
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 from data_connection import load_data
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_score
 
 

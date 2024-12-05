@@ -35,17 +35,9 @@ def validate_env_variables(*variables):
 
 
 def filter_columns(data):
-    """"
-    Filtra las columnas de un DataFrame para incluir solo las necesarias según el archivo .env
-    y elimina la primera columna.
-
-    Args:
-        data (pd.DataFrame): DataFrame original a filtrar
-
-    Returns:
-        pd.DataFrame: DataFrame filtrado
     """
-
+    Filtra las columnas de un DataFrame para incluir solo las necesarias según el archivo .env.
+    """
     try:
         # Validar que las variables de entorno necesarias estén definidas
         validate_env_variables("required_columns")
@@ -53,7 +45,6 @@ def filter_columns(data):
         columns_str = os.getenv("required_columns")
 
         required_columns = [col.strip() for col in columns_str.split(",")]
-
         missing_columns = [
             col for col in required_columns if col not in data.columns]
 
@@ -61,7 +52,6 @@ def filter_columns(data):
             raise ValueError(
                 f"Las siguientes columnas necesarias no están en los datos: {missing_columns}")
 
-        # Eliminar la primera columna y filtrar por las columnas necesarias
         return data[required_columns]
 
     except Exception as e:
@@ -86,11 +76,11 @@ def split_data(data, train_size=0.65, val_size=0.30, test_size=0.05, random_stat
     if not np.isclose(train_size + val_size + test_size, 1.0):
         raise ValueError("Las proporciones de división deben sumar 1.0")
 
-    if not random_state:
+    if not test_size:
         # Validar que las variables de entorno necesarias estén definidas
         validate_env_variables('random_state')
 
-        random_state = int(os.getenv('random_state'))
+        test_size = os.getenv('random_state')
 
     # División inicial: 65% para entrenamiento y 35% para validación + prueba
     train_data, temp_data = train_test_split(
@@ -108,46 +98,15 @@ def split_data(data, train_size=0.65, val_size=0.30, test_size=0.05, random_stat
 
 
 def main():
-    """
-    Función principal para cargar, procesar y dividir datos.
-    Maneja la carga desde archivo principal o respaldo, filtrado de columnas 
-    y división de datos en conjuntos de entrenamiento, validación y prueba.
-    """
-
     try:
 
-        """
-        Función principal para cargar, procesar y dividir datos.
-        Maneja la carga desde archivo principal o respaldo, filtrado de columnas 
-        y división de datos en conjuntos de entrenamiento, validación y prueba.
-        """
-
-        # Validar variables de entorno
-        validate_env_variables(
-            'file_data',
-            'file_data2',
-            'directory_data',
-            'directory_project'
-        )
+        # Validar que las variables de entorno necesarias estén definidas
+        validate_env_variables('file_data', 'file_data2', 'directory_data')
 
         # Cargar las rutas de los datos
-        directory_project = os.getenv('directory_project')
-
-        output_directory = os.path.normpath(
-            os.path.join(
-                directory_project,
-                os.getenv('directory_data')
-            )
-        )
-
-        file_path = os.path.normpath(
-            os.path.join(
-                directory_project,
-                os.getenv('file_data')
-            )
-        )
-
+        file_path = os.getenv('file_data')
         backup_url = os.getenv('file_data2')
+        output_directory = os.getenv('directory_data')
 
         # Crear directorio de salida si no existe
         os.makedirs(output_directory, exist_ok=True)
@@ -169,12 +128,6 @@ def main():
         train_data, validation_data, test_data = split_data(datos)
 
         # Definir rutas de salida
-        output_files = {
-            'train': os.path.join(output_directory, 'train_data.csv'),
-            'validation': os.path.join(output_directory, 'validation_data.csv'),
-            'test': os.path.join(output_directory, 'test_data.csv')
-        }
-
         train_path = os.path.join(output_directory, 'train_data.csv')
         val_path = os.path.join(output_directory, 'validation_data.csv')
         test_path = os.path.join(output_directory, 'test_data.csv')
@@ -187,6 +140,10 @@ def main():
         # Confirmación final
         logger.info("Proceso de división de datos completado exitosamente")
 
+        # print("\nDatos divididos y guardados exitosamente:")
+        # print(f"Entrenamiento: {train_data.shape}")
+        # print(f"Validación: {validation_data.shape}")
+        # print(f"Prueba: {test_data.shape}")
 
     except Exception as e:
         logger.error(f"Error durante la ejecución: {e}")
