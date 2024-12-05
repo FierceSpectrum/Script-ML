@@ -1,0 +1,34 @@
+2024-12-04 17:50:14 - [data-splitting-enhanced.py:229] - ERROR: Error durante la ejecución: Falta definir la variable de entorno: file_data
+2024-12-04 17:50:14 - [data-splitting-enhanced.py:230] - DEBUG: Traceback (most recent call last):
+  File "c:\Users\Admin\Documents\Cursos\Mineria de Datos\Script-ML\src\data-splitting-enhanced.py", line 190, in main
+    validate_env_variables('file_data', 'file_data2', 'directory_data')
+  File "c:\Users\Admin\Documents\Cursos\Mineria de Datos\Script-ML\src\data-splitting-enhanced.py", line 99, in validate_env_variables
+    raise EnvironmentError(f"Falta definir la variable de entorno: {var}")
+OSError: Falta definir la variable de entorno: file_data
+
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:202] - INFO: Directorio de salida: C:/Users/Admin/Documents/Cursos/Mineria de Datos/Script-ML/data
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:132] - INFO: Columnas filtradas: ['account_length', 'num_voicemail_messages', 'total_day_minutes', 'total_day_calls', 'total_day_charge', 'total_evening_minutes', 'total_evening_calls', 'total_evening_charge', 'total_night_minutes', 'total_night_calls', 'total_night_charge', 'total_intl_minutes', 'total_intl_calls', 'total_intl_charge', 'num_customer_service_calls']
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:174] - INFO: División de datos completada. Proporciones:
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:175] - INFO: Entrenamiento: 65.00%
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:176] - INFO: Validación: 29.98%
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:177] - INFO: Prueba: 5.02%
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:78] - INFO: Archivo guardado: C:/Users/Admin/Documents/Cursos/Mineria de Datos/Script-ML/data\train_data.csv
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:79] - INFO: Tamaño del conjunto: (3250, 15)
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:78] - INFO: Archivo guardado: C:/Users/Admin/Documents/Cursos/Mineria de Datos/Script-ML/data\validation_data.csv
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:79] - INFO: Tamaño del conjunto: (1499, 15)
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:78] - INFO: Archivo guardado: C:/Users/Admin/Documents/Cursos/Mineria de Datos/Script-ML/data\test_data.csv
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:79] - INFO: Tamaño del conjunto: (251, 15)
+2024-12-04 17:52:04 - [data-splitting-enhanced.py:229] - INFO: Proceso de división de datos completado exitosamente
+2024-12-04 17:52:13 - [data-splitting-enhanced.py:202] - INFO: Directorio de salida: C:/Users/Admin/Documents/Cursos/Mineria de Datos/Script-ML/data
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:132] - INFO: Columnas filtradas: ['account_length', 'num_voicemail_messages', 'total_day_minutes', 'total_day_calls', 'total_day_charge', 'total_evening_minutes', 'total_evening_calls', 'total_evening_charge', 'total_night_minutes', 'total_night_calls', 'total_night_charge', 'total_intl_minutes', 'total_intl_calls', 'total_intl_charge', 'num_customer_service_calls']
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:174] - INFO: División de datos completada. Proporciones:
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:175] - INFO: Entrenamiento: 65.00%
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:176] - INFO: Validación: 29.98%
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:177] - INFO: Prueba: 5.02%
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:78] - INFO: Archivo guardado: C:/Users/Admin/Documents/Cursos/Mineria de Datos/Script-ML/data\train_data.csv
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:79] - INFO: Tamaño del conjunto: (3250, 15)
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:78] - INFO: Archivo guardado: C:/Users/Admin/Documents/Cursos/Mineria de Datos/Script-ML/data\validation_data.csv
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:79] - INFO: Tamaño del conjunto: (1499, 15)
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:78] - INFO: Archivo guardado: C:/Users/Admin/Documents/Cursos/Mineria de Datos/Script-ML/data\test_data.csv
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:79] - INFO: Tamaño del conjunto: (251, 15)
+2024-12-04 17:52:14 - [data-splitting-enhanced.py:229] - INFO: Proceso de división de datos completado exitosamente
