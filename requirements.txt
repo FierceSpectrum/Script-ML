@@ -3,3 +3,4 @@ python-dotenv
 scikit-learn
 numpy
 logging
+matplotlib
