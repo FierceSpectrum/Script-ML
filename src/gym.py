@@ -32,7 +32,7 @@ def model_K_Means():
 
     # Ruta del archivo de datos
     data_path = extract_data_path('train_data.csv')
-
+    
     # Cargar los datos
     train_data = load_data(data_path)
 

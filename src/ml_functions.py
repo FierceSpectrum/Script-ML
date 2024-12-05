@@ -143,27 +143,35 @@ def plot_original_data(df):
 
 
 def visualize_clusters_2d(data, labels, kmeans):
+    '''
     pca = PCA(n_components=2)
     reduced_data = pca.fit_transform(data)
+    
 
     # Normalizar las dimensiones reducidas (PCA)
     scaler = StandardScaler()
     # Normaliza las 2 componentes principales
     reduced_data = scaler.fit_transform(reduced_data)
 
-    # Graficar los resultados
-    plt.figure(figsize=(8, 6))
-    plt.scatter(reduced_data[:, 0], reduced_data[:, 1],
-                c=labels, cmap='viridis', s=50, alpha=0.5, label="Clientes")
     plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[
                 :, 1], s=200, c='red', marker='X', label="Centroides")
-    plt.title("Clusters visualizados en 2D")
-    plt.xlabel("Componente Principal 1")
-    plt.ylabel("Componente Principal 2")
-    plt.colorbar(label="Cluster ID")
+    '''
+
+    # Graficar los resultados
+    graf = plt.figure(figsize=(10, 8))
+    ax = graf.add_subplot(111,projection='3d')
+    scatter = ax.scatter(data.iloc[:, 0], data.iloc[:, 3], data.iloc[:, 6],
+                c=labels, cmap='viridis', s=50, alpha=0.7, label="Clientes")
+    
+    ax.set_title("Clusters visualizados en 3D")
+    ax.set_xlabel("Componente Principal 1")
+    ax.set_ylabel("Componente Principal 2")
+    ax.set_zlabel("Componente Principal 3")
+
+    graf.colorbar(scatter, ax=ax, label="Cluster ID")
     plt.legend()
     plt.grid(True)
-    plt.savefig(create_image_path('clusters_2d.png'))
+    plt.savefig(create_image_path('clusters_3d.png'))
     plt.show()
 
 # 6. Asignar etiquetas a los datos
