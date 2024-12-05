@@ -12,12 +12,28 @@ logger = get_logger()
 load_dotenv()
 
 
-def save_data(data, file_path):
+def create_data_path(name_path):
+    validate_env_variables('directory_project', 'directory_data')
+
+    directory_project = os.getenv('directory_project')
+
+    output_directory = os.path.normpath(
+        os.path.join(
+            directory_project,
+            os.getenv('directory_data')
+        )
+    )
+
+    data_path = os.path.join(output_directory, name_path)
+    return data_path
+
+
+def save_data(data, file_path, **kwargs):
     """
     Guarda un DataFrame en un archivo CSV y confirma la acción.
     """
     try:
-        data.to_csv(file_path, index=False)
+        data.to_csv(file_path, index=False, **kwargs)
         logger.info(f"Archivo guardado: {file_path}")
         logger.info(f"Tamaño del conjunto: {data.shape}")
     except Exception as e:
@@ -175,9 +191,9 @@ def main():
             'test': os.path.join(output_directory, 'test_data.csv')
         }
 
-        train_path = os.path.join(output_directory, 'train_data.csv')
-        val_path = os.path.join(output_directory, 'validation_data.csv')
-        test_path = os.path.join(output_directory, 'test_data.csv')
+        train_path = create_data_path('train_data.csv')
+        val_path = create_data_path('validation_data.csv')
+        test_path = create_data_path('test_data.csv')
 
         # Guardar cada conjunto en archivos separados
         save_data(train_data, train_path)  # 65% de los datos
@@ -186,7 +202,6 @@ def main():
 
         # Confirmación final
         logger.info("Proceso de división de datos completado exitosamente")
-
 
     except Exception as e:
         logger.error(f"Error durante la ejecución: {e}")

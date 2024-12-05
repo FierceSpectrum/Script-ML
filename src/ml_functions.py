@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 from data_functions import validate_env_variables
 
@@ -18,7 +19,7 @@ def create_image_path(name_path):
     return image_path
 
 
-def train_kmeans(data, n_clusters=4):
+def train_kmeans(data, n_clusters=None):
     """
     Entrena un modelo K-Means Clustering.
 
@@ -27,24 +28,24 @@ def train_kmeans(data, n_clusters=4):
     :return: Modelo entrenado, inertia, silhouette score.
     """
 
-    validate_env_variables('random_state')
+    validate_env_variables('random_state', 'n_clusters')
     random_state = int(os.getenv('random_state'))
 
-    # Preparar los datos para entrenamiento
-    X_train = data.values  # Convertimos a matriz NumPy
+    if not n_clusters:
+        n_clusters = int(os.getenv('n_clusters'))
 
     # Inicializar el modelo
     kmeans = KMeans(n_clusters=n_clusters, random_state=random_state)
 
     # Entrenar el modelo
-    kmeans.fit(X_train)
+    kmeans.fit(data)
 
     # Evaluar el modelo
     inertia = kmeans.inertia_  # Metrica de calidad del modelo
     labels = kmeans.labels_
-    silhouette = silhouette_score(X_train, labels)  # Puntuacion de Silhouette
+    silhouette = silhouette_score(data, labels)  # Puntuacion de Silhouette
 
-    return kmeans, inertia, silhouette, X_train
+    return kmeans, inertia, labels, silhouette
 
 
 def evaluate_kmeans(inertia, silhouette):
@@ -70,11 +71,11 @@ def visualize_clusters(kmeans_model, data):
     # plt.scatter(clientes[clientes["cluster"] == cluster]["saldo"],
     #                 clientes[clientes["cluster"] == cluster]["transacciones"],
     #                 marker = "O", s=180, color = colores[cluster], alpha=0.5)
-    
+
     # plt.scatter(kmeans_model.cluster_center_[cluster][0],
     #              kmeans_model.cluster_center_[cluster][1],
     #                 marker = "P", s=280, color = colores[cluster])
-    
+
     # plt.title("C1ientes", fontsize=20)
     # plt.xlabel("Saldo en cuenta de ahorros (pesos)" , fontsize=15)
     # plt.ylabel( "Veces que usó tarjeta de crédito", fontsize=15)
@@ -84,20 +85,20 @@ def visualize_clusters(kmeans_model, data):
     # plt.ylim(-0.1, 1.1)
     # plt.show( )
 
-    # Reducir dimensiones con PCA
-    pca = PCA(n_components=2)
-    reduced_data = pca.fit_transform(data)
-
-    plt.scatter(reduced_data[:, 0], reduced_data[:, 1],
-                c=kmeans_model.labels_, cmap='viridis', s=50)
+    # Graficar clusters
+    plt.figure(figsize=(8, 6))
+    plt.scatter(data[:, 0], data[:, 1],
+                c=kmeans_model.labels_, cmap='viridis', s=50, alpha=0.5, label="Puntos Clusterizados")
     plt.scatter(kmeans_model.cluster_centers_[:, 0], kmeans_model.cluster_centers_[
-                :, 1], s=200, c='red', marker='X')
-    
-    plt.title("Clusters visualizados en 2D")
-    plt.xlabel("Componente Principal 1")
-    plt.ylabel("Componente Principal 2")
+                :, 1], s=200, c='red', marker='X', label="Centroides")
+
+    plt.title(f"Clusters con K={kmeans_model.n_clusters}")
+    plt.xlabel("Feature1")
+    plt.ylabel("Feature2")
+    plt.legend()
     plt.savefig(create_image_path('kmeans_checked.png'))
     plt.show()
+
 
 def plot_elbow_method(data, max_clusters=10):
     """
@@ -108,19 +109,85 @@ def plot_elbow_method(data, max_clusters=10):
     validate_env_variables('random_state')
     random_state = int(os.getenv('random_state'))
 
-    X_train = data.values
     inertias = []
 
     for k in range(1, max_clusters + 1):
         kmeans = KMeans(n_clusters=k, random_state=random_state)
-        kmeans.fit(X_train)
+        kmeans.fit(data)
         inertias.append(kmeans.inertia_)
 
-    plt.figure(figsize=(8, 5))
+    plt.figure(figsize=(8, 6))
     plt.plot(range(1, max_clusters + 1), inertias, marker='o', linestyle='--')
     plt.title("Método del Codo")
     plt.xlabel("Número de Clusters")
     plt.ylabel("Inercia")
     plt.xticks(range(1, max_clusters + 1))
+    plt.grid(True)
     plt.savefig(create_image_path('elbow_method.png'))
+    plt.show()
+
+
+# Función para visualizar los datos originales
+def plot_original_data(df):
+    plt.figure(figsize=(8, 6))
+    plt.scatter(df[:, 0], df[:, 1], c="blue", s=50, label="Datos originales")
+    plt.title("Datos Originales")
+    plt.xlabel("Feature1")
+    plt.ylabel("Feature2")
+    plt.legend()
+    plt.savefig(create_image_path('original_data.png'))
+    plt.show()
+
+
+# 5. Visualización de clusters en 2D (opcional, con PCA)
+
+
+def visualize_clusters_2d(data, labels, kmeans):
+    pca = PCA(n_components=2)
+    reduced_data = pca.fit_transform(data)
+
+    # Normalizar las dimensiones reducidas (PCA)
+    scaler = StandardScaler()
+    # Normaliza las 2 componentes principales
+    reduced_data = scaler.fit_transform(reduced_data)
+
+    # Graficar los resultados
+    plt.figure(figsize=(8, 6))
+    plt.scatter(reduced_data[:, 0], reduced_data[:, 1],
+                c=labels, cmap='viridis', s=50, alpha=0.5, label="Clientes")
+    plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[
+                :, 1], s=200, c='red', marker='X', label="Centroides")
+    plt.title("Clusters visualizados en 2D")
+    plt.xlabel("Componente Principal 1")
+    plt.ylabel("Componente Principal 2")
+    plt.colorbar(label="Cluster ID")
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(create_image_path('clusters_2d.png'))
+    plt.show()
+
+# 6. Asignar etiquetas a los datos
+
+
+def assign_clusters(df, labels):
+    df["Cluster"] = labels
+    print(df.head())
+    return df
+
+from sklearn.manifold import TSNE
+
+def visualize_clusters_tsne(data, labels, kmeans):
+    # Reducir dimensiones con t-SNE
+    tsne = TSNE(n_components=2, random_state=42)
+    reduced_data = tsne.fit_transform(data)
+
+    # Graficar los resultados
+    plt.figure(figsize=(8, 6))
+    plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=labels, cmap='viridis', s=50)
+    plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], s=200, c='red', marker='X')  # Centroides
+    plt.title("Clusters visualizados con t-SNE")
+    plt.xlabel("Dim 1")
+    plt.ylabel("Dim 2")
+    plt.colorbar(label="Cluster ID")
+    plt.grid(True)
     plt.show()
