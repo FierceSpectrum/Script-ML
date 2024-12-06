@@ -17,6 +17,17 @@ load_dotenv()
 
 
 def create_image_path(name_path):
+
+    """
+    Crea la ruta completa donde se guardada las imagenes creadas mediante la libreria matplotlib.
+
+    Parámetros:
+        name_path (str): Nombre de la imagen a guardar.
+
+    Retorna:
+        Ruta hacia la carpeta "images" con el nombre de la imagen.
+    """
+
     validate_env_variables('directory_image')
     image_path = os.path.normpath(os.path.join(
         os.getenv('directory_image'), name_path))
@@ -24,6 +35,18 @@ def create_image_path(name_path):
 
 
 def calculate_silhouette_score(df, labels):
+
+    """
+    Crea el modelo "Silhouette" para validar la calidad de los clusters y si fueron bien creados.
+
+    Parámetros:
+        df: DataFrame de los datos evaluados por el modelo.
+        labels: Etiquetas asignadas a cada uno de los datos.
+
+    Retorna:
+        El resultado de la funcion Silhouette para imprimir en pantalla.
+    """
+
     silhouette = silhouette_score(df, labels)
     return silhouette
 
@@ -59,6 +82,17 @@ def train_kmeans(data, n_clusters=None):
 
 
 def predict_kmeans(df, kmeans):
+
+    """
+    Realiza la predicción con los datos de validación, luego de que el modelo fuera entrenado.
+
+    Parámetros:
+        df: DataFrame de los datos de validación para que el modelo realice predicciones.
+        kmeans: El modelo kmeans al cual se le aplicada los datos para que valide lo aprendido.
+
+    Retorna:
+        Retorna un conjunto de datos DataFrame con los datos agrupados en base a lo aprendido por el modelo.
+    """
 
     validation_labels = kmeans.predict(df)
 
@@ -109,6 +143,18 @@ def plot_elbow_method(data, max_clusters=10, name_img="elbow_method.png"):
 
 
 def plot_original_data(df, name_img="original_data_train.png"):
+
+    """
+    Grafico 3D original, el cual mantiene la estructura original de como se verian los datos.
+
+    Parámetros:
+        df: DataFrame de los datos agrupados por el modelo K-Means.
+        name_img: Nombre de la imagen que recibida el grafico al ser guardado.
+
+    Retorna:
+        Ejecuta una funcion ".show", donde muestra en una ventana un grafico 3D con los clusters agrupados.
+    """
+
     graf = plt.figure(figsize=(10, 8))
     ax = graf.add_subplot(111, projection='3d')
     scatter = ax.scatter(df[:, 0], df[:, 1], df[:, 2],
@@ -285,6 +331,18 @@ def visualize_clusters_3d(data, labels, kmeans):
 
 
 def assign_clusters(df, labels):
+
+    """
+    Asigna las etiquetas de los cluster al conjunto de datos.
+
+    Parámetros:
+        df: DataFrame de los datos evaluados.
+        labels: Etiquetas de los datos evaluados.
+
+    Retorna:
+        Conjunto de datos con las etiquedas añadidas en la columna "Cluster".
+    """
+
     df["Cluster"] = labels
     return df
 
@@ -309,6 +367,19 @@ def calculate_inertia_percentage(data, kmeans_inertia):
 
 
 def mean_distance_to_centroids(data, labels, kmeans):
+    
+    """
+    Calcula la distancia entre cada punto centro (centroid) en el grafico.
+
+    Parámetros:
+        data: DataFrame de los datos evaluados.
+        labels: Etiquetas de los datos evaluados por el modelo.
+        kmeans: Modelo de aprendizaje K-Means.
+
+    Retorna:
+        Distancias de cada centroid dentro de un array.
+    """
+
     distances = []
     for cluster_id in range(kmeans.n_clusters):
         cluster_points = data[labels == cluster_id]

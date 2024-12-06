@@ -13,6 +13,17 @@ load_dotenv()
 
 
 def create_data_path(name_path):
+
+    """
+    Valida y crea la ruta hacia un archivo en la carpeta de "data".
+
+    Parámetros:
+        name_path (str): nombre del archivo a abrir o leer.
+
+    Retorna:
+        Ruta completa hacia el archivo dentro del proyecto.
+    """
+
     validate_env_variables('directory_project', 'directory_data')
 
     directory_project = os.getenv('directory_project')

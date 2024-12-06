@@ -14,6 +14,17 @@ load_dotenv()
 
 
 def extract_data_path(name_file):
+    
+    """
+    Extrae la ruta guardada en las variables de entorno y añade el nombre de un archivo a leer en la carpeta "data"
+
+    Parámetros:
+        name_file (str): Nombre del archivo a leer en la carpeta "data"
+
+    Retorna:
+        Ruta completa hacia un archivo
+    """
+
     validate_env_variables('directory_data')
 
     data_path = os.path.normpath(os.path.join(os.getenv(
@@ -23,6 +34,7 @@ def extract_data_path(name_file):
 
 def model_K_Means():
 
+    # Valida la existencia de la variable de entorno antes de asignar su valor.
     validate_env_variables('n_clusters')
     n_clusters = int(os.getenv('n_clusters'))
 
@@ -92,6 +104,7 @@ def model_K_Means():
     df_with_clusters = ml.assign_clusters(test_data.copy(), test_labels)
     save_data(df_with_clusters, create_data_path('kmeans_test_data.csv'))
 
+    # Se aplica modelo para medir la calidad de los cluster
     silhouette = ml.calculate_silhouette_score(test_data, test_labels)
     print("silhouette")
     print(silhouette)
