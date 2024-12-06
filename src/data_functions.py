@@ -209,6 +209,18 @@ def assign_clusters(df, labels):
 
 def visualize_clusters_3d(data, labels, kmeans):
 
+    """
+    Crea y muestra un grafico 3D con las dimensiones entrenadas en el modelo.
+
+    Parámetros:
+        data: DataFrame de los datos evaluados.
+        labels: Etiquetas de los datos evaluados.
+        kmeans: Modelo de aprendizaje
+
+    Retorna:
+        Conjunto de datos con las etiquedas añadidas en la columna "Cluster".
+    """
+
     if data.shape[1] < 3:
         raise ValueError(
             "El conjunto de datos debe tener al menos 3 columnas para graficar en 3D.")

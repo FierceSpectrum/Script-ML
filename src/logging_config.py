@@ -3,6 +3,17 @@ import inspect
 
 
 def get_logger():
+
+    """
+    Asigna las etiquetas de los cluster al conjunto de datos.
+
+    Parámetros:
+        
+
+    Retorna:
+        El objeto "logger" inicializado
+    """
+
     caller_frame = inspect.stack()[1]
     caller_file = caller_frame.filename.split("\\")[-1]
 
