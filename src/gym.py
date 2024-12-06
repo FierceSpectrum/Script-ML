@@ -6,6 +6,8 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from data_connection import load_data
 import ml_functions as ml
+import seaborn as sns
+
 
 
 from data_functions import validate_env_variables, save_data, create_data_path
@@ -113,6 +115,23 @@ def model_K_Means():
 
 
 def model_DBSCAN():
+
+    # Valida la existencia de la variable de entorno antes de asignar su valor.
+    validate_env_variables('n_clusters')
+    n_clusters = int(os.getenv('n_clusters'))
+
+    # Ruta del archivo de datos
+    data_path = extract_data_path('train_data.csv')
+
+    # Cargar los datos
+    train_data = load_data(data_path)
+
+    # Entrenar modelo DBSCAN
+    dbscan = DBSCAN(eps=0.5, min_samples=5)
+    dbscan.fit(train_data)
+    train_labels = dbscan.labels_
+
+    
     return
 
 

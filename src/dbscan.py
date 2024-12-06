@@ -15,11 +15,12 @@ train_data = pd.read_csv(train_file)
 validation_data = pd.read_csv(validation_file)
 
 # 2. Preprocesamiento (Estandarización)
-scaler = StandardScaler()
+# scaler = StandardScaler()
 train_data_scaled = train_data
 validation_data_scaled = validation_data
 
 # 3. Configuración y ajuste inicial de DBSCAN
+
 dbscan = DBSCAN(eps=0.5, min_samples=5)
 dbscan.fit(train_data_scaled)
 train_labels = dbscan.labels_

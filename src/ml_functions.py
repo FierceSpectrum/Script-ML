@@ -232,13 +232,7 @@ def visualize_clusters_3d_matplotlib(data, labels, kmeans, name_img="cluster_3d_
 
 
 def visualize_clusters_3d(data, labels, kmeans):
-    """
-    Visualiza los clusters en 3D con interactividad.
-
-    :param data: DataFrame o matriz con al menos 3 columnas (total_day_minutes, total_evening_minutes, total_night_minutes).
-    :param labels: Etiquetas de los clusters asignadas por K-Means.
-    :param kmeans: Modelo K-Means entrenado para acceder a los centroides.
-    """
+    
     if data.shape[1] < 3:
         raise ValueError(
             "El conjunto de datos debe tener al menos 3 columnas para graficar en 3D.")
