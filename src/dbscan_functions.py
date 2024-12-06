@@ -62,7 +62,7 @@ def plot_clusters(data, labels, title, xlabel, ylabel):
 
     palette = sns.color_palette("husl", len(unique_labels) - 1)  # Paleta para clusters
     colors = [
-        palette[i] if k != -1 else (0.5, 0.5, 0.5) for i, k in enumerate(unique_labels)
+        palette[i] if k != -1 else (0, 0, 0) for i, k in enumerate(unique_labels)
     ]  # Gris para ruido
 
     # Crear gráfica
@@ -79,22 +79,6 @@ def plot_clusters(data, labels, title, xlabel, ylabel):
             alpha=0.7,
             edgecolor="k",
         )
-
-    # colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
-    # for k, col in zip(unique_labels, colors):
-    #     if k == -1:  # Ruido
-    #         col = [0, 0, 1, 1]
-
-    #     class_member_mask = labels == k
-    #     xy = data[class_member_mask]
-    #     plt.plot(
-    #         xy[:, 0],
-    #         xy[:, 1],
-    #         "o",
-    #         markerfacecolor=tuple(col),
-    #         markeredgecolor="k",
-    #         markersize=10,
-    #     )
 
     plt.title(title, fontsize=16)
     plt.xlabel(xlabel, fontsize=12)

@@ -132,6 +132,12 @@ def model_DBSCAN():
     test_data = load_data(test_file)
 
     # Configuración de DBSCAN
+    # ? Para una división más detallada de los datos, el modelo con eps=0.11 y min_samples=4 (2 clusters) parece ser más adecuado
+    # ? Ya que muestra una segmentación clara sin perder demasiados puntos como ruido.
+    # dbscan = dbf.configure_dbscan(eps=0.11, min_samples=4)
+
+    # ? Para una agrupación más amplia, el modelo con eps=0.12 y min_samples=4 (1 único cluster) puede ser más útil
+    # ? Especialmente si los datos son más homogéneos y puedes trabajar con una agrupación general.
     dbscan = dbf.configure_dbscan(eps=0.12, min_samples=4)
 
     # Ajustar y evaluar en datos de entrenamiento
