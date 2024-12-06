@@ -14,7 +14,13 @@ train_data_scaled = pd.read_csv(train_file)
 validation_data_scaled = pd.read_csv(validation_file)
 
 # Configuración y ajuste inicial de DBSCAN
-dbscan = DBSCAN(eps=0.5, min_samples=5)
+# ? Para una división más detallada de los datos, el modelo con eps=0.11 (2 clusters) parece ser más adecuado
+# ? Ya que muestra una segmentación clara sin perder demasiados puntos como ruido.
+# dbscan = DBSCAN(eps=0.11, min_samples=4)
+
+# ? Para una agrupación más amplia, el modelo con eps=0.12 (1 único cluster) puede ser más útil
+# ? Especialmente si los datos son más homogéneos y puedes trabajar con una agrupación general.
+dbscan = DBSCAN(eps=0.12, min_samples=4)
 dbscan.fit(train_data_scaled)
 train_labels = dbscan.labels_
 
@@ -33,35 +39,6 @@ else:
         "No se puede calcular el coeficiente de silueta: solo hay un cluster o ruido."
     )
 
-
-# Optimización de parámetros (eps y min_samples)
-def tune_dbscan(data, eps_values, min_samples_values):
-    best_score = -1
-    best_params = None
-    for eps in eps_values:
-        for min_samples in min_samples_values:
-            model = DBSCAN(eps=eps, min_samples=min_samples)
-            labels = model.fit_predict(data)
-            if len(set(labels)) > 1:
-                score = silhouette_score(data, labels)
-                if score > best_score:
-                    best_score = score
-                    best_params = (eps, min_samples)
-    return best_params, best_score
-
-
-eps_values = np.arange(0.1, 1.0, 0.1)
-min_samples_values = range(2, 10)
-best_params, best_score = tune_dbscan(train_data_scaled, eps_values, min_samples_values)
-
-print(
-    f"Mejores parámetros: eps={best_params[0]}, min_samples={best_params[1]} (Score: {best_score:.4f})"
-)
-
-# Reentrenar con los mejores parámetros
-dbscan = DBSCAN(eps=best_params[0], min_samples=best_params[1])
-dbscan.fit(train_data_scaled)
-train_labels = dbscan.labels_
 
 # Interpretación del modelo (PCA para visualización)
 pca = PCA(n_components=2)
