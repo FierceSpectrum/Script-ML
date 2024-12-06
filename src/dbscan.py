@@ -1,30 +1,24 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.decomposition import PCA
 
-# 1. Cargar los conjuntos de datos
+# Cargar los conjuntos de datos
 train_file = "data/train_data.csv"
 validation_file = "data/validation_data.csv"
 
-train_data = pd.read_csv(train_file)
-validation_data = pd.read_csv(validation_file)
+train_data_scaled = pd.read_csv(train_file)
+validation_data_scaled = pd.read_csv(validation_file)
 
-# 2. Preprocesamiento (Estandarización)
-scaler = StandardScaler()
-train_data_scaled = train_data
-validation_data_scaled = validation_data
-
-# 3. Configuración y ajuste inicial de DBSCAN
+# Configuración y ajuste inicial de DBSCAN
 dbscan = DBSCAN(eps=0.5, min_samples=5)
 dbscan.fit(train_data_scaled)
 train_labels = dbscan.labels_
 
-# 4. Evaluación inicial del modelo
+# Evaluación inicial del modelo
 num_clusters = len(set(train_labels)) - (1 if -1 in train_labels else 0)
 num_noise = sum(train_labels == -1)
 
@@ -40,7 +34,7 @@ else:
     )
 
 
-# 5. Optimización de parámetros (eps y min_samples)
+# Optimización de parámetros (eps y min_samples)
 def tune_dbscan(data, eps_values, min_samples_values):
     best_score = -1
     best_params = None
@@ -69,7 +63,7 @@ dbscan = DBSCAN(eps=best_params[0], min_samples=best_params[1])
 dbscan.fit(train_data_scaled)
 train_labels = dbscan.labels_
 
-# 6. Interpretación del modelo (PCA para visualización)
+# Interpretación del modelo (PCA para visualización)
 pca = PCA(n_components=2)
 train_data_pca = pca.fit_transform(train_data_scaled)
 
@@ -132,7 +126,7 @@ def plot_clusters(data, labels, title="Clusters"):
 
 plot_clusters(train_data_pca, train_labels, title="Clusters en Datos de Entrenamiento")
 
-# 7. Evaluación en datos de validación
+# Evaluación en datos de validación
 validation_labels = dbscan.fit_predict(validation_data_scaled)
 
 if len(set(validation_labels)) > 1:
@@ -148,7 +142,7 @@ plot_clusters(
     validation_data_pca, validation_labels, title="Clusters en Datos de Validación"
 )
 
-# 8. Predicción en nuevos datos
+# Predicción en nuevos datos
 new_data_scaled = pd.read_csv("data/test_data.csv")
 
 new_labels = dbscan.fit_predict(new_data_scaled)
