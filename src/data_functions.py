@@ -177,7 +177,7 @@ def plot_original_data(df, name_img="original_data_train.png"):
 
     graf = plt.figure(figsize=(10, 8))
     ax = graf.add_subplot(111, projection='3d')
-    scatter = ax.scatter(df[:, 0], df[:, 1], df[:, 2],
+    scatter = ax.scatter(df.iloc[:, 0], df.iloc[:, 1], df.iloc[:, 2],
                          c="blue", s=50, label="Datos originales")
 
     ax.set_title("Datos Originales")
@@ -365,7 +365,7 @@ def plot_elbow_method(data, max_clusters=10, name_img="elbow_method.png"):
     plt.show()
 
 
-def main():
+def divie_data(datos=None):
     """
     Función principal para cargar, procesar y dividir datos.
     Maneja la carga desde archivo principal o respaldo, filtrado de columnas 
@@ -384,7 +384,80 @@ def main():
         validate_env_variables(
             'file_data',
             'file_data2',
-            'file_data3',
+            'directory_data',
+            'directory_project'
+        )
+
+        # Cargar las rutas de los datos
+        directory_project = os.getenv('directory_project')
+
+        output_directory = os.path.normpath(
+            os.path.join(
+                directory_project,
+                os.getenv('directory_data')
+            )
+        )
+
+        if datos is None or datos.empty:
+            file_path = create_data_path('clear_data.csv')
+
+            if not os.path.exists(file_path):
+                file_path = os.path.normpath(
+                os.path.join(
+                    directory_project,
+                    os.getenv('file_data')
+                )
+            )
+
+            backup_url = os.getenv('file_data2')
+
+            # Crear directorio de salida si no existe
+            os.makedirs(output_directory, exist_ok=True)
+            logger.info(f"Directorio de salida: {output_directory}")
+
+            # Verificar y cargar datos
+            if not os.path.exists(file_path):
+                logger.warning(f"Archivo no encontrado en: {file_path}")
+                logger.info("Descargando datos desde enlace de respaldo...")
+                save_data(load_data(backup_url), file_path)
+
+            # Cargar datos
+            datos = load_data(file_path)
+
+            # Filtrar columnas
+            datos = filter_columns(datos)
+
+        # Dividir datos
+        train_data, validation_data, test_data = split_data(datos)
+
+        train_path = create_data_path('train_data.csv')
+        val_path = create_data_path('validation_data.csv')
+        test_path = create_data_path('test_data.csv')
+
+        # Guardar cada conjunto en archivos separados
+        save_data(train_data, train_path)  # 65% de los datos
+        save_data(validation_data, val_path)  # 30% de los datos
+        save_data(test_data, test_path)  # 5% de los datos
+
+        # Confirmación final
+        logger.info("Proceso de división de datos completado exitosamente")
+
+    except Exception as e:
+        logger.error(f"Error durante la ejecución: {e}")
+
+def prepare_data():
+    try:
+
+        """
+        Función principal para cargar, procesar y dividir datos.
+        Maneja la carga desde archivo principal o respaldo, filtrado de columnas 
+        y división de datos en conjuntos de entrenamiento, validación y prueba.
+        """
+
+        # Validar variables de entorno
+        validate_env_variables(
+            'file_data',
+            'file_data2',
             'directory_data',
             'directory_project'
         )
@@ -422,19 +495,12 @@ def main():
         datos = load_data(file_path)
 
         # Filtrar columnas
-        datos = filter_columns(datos)
+        # datos = filter_columns(datos)
 
-        # Dividir datos
-        train_data, validation_data, test_data = split_data(datos)
-
-        train_path = create_data_path('train_data.csv')
-        val_path = create_data_path('validation_data.csv')
-        test_path = create_data_path('test_data.csv')
+        clear_data_path = create_data_path('clear_data.csv')
 
         # Guardar cada conjunto en archivos separados
-        save_data(train_data, train_path)  # 65% de los datos
-        save_data(validation_data, val_path)  # 30% de los datos
-        save_data(test_data, test_path)  # 5% de los datos
+        save_data(datos, clear_data_path)  # 65% de los datos
 
         # Confirmación final
         logger.info("Proceso de división de datos completado exitosamente")
@@ -444,4 +510,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    prepare_data()
+    divie_data()

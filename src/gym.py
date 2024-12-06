@@ -55,12 +55,12 @@ def process_model(data, labels, model_name, rute_model, centroids, data_type):
     df_with_clusters = df.assign_clusters(data.copy(), labels)
     df.save_data(df_with_clusters, df.create_data_path(
         f'{rute_model}/{data_type}_data.csv'))
-    
+
     df.plot_original_data(data, f"original_data_{data_type}.png")
 
     # Visualizar los clusters en 3D
     df.visualize_clusters_3d_matplotlib(data, labels, centroids, f"{
-                                         rute_model}/cluster_{data_type}.png", title=f"Distribución de clusters - {model_name}")
+        rute_model}/cluster_{data_type}.png", title=f"Distribución de clusters - {model_name}")
 
     return silhouette
 
@@ -113,6 +113,8 @@ def process_clustering_model(data, model, model_name, rute_model, n_clusters=Non
     # Ajustar el modelo
     print(f"\nAjustando el modelo {model_name}...\n")
 
+    create_directory(rute_model)
+
     if not n_clusters:
         df.validate_env_variables('n_clusters')
         n_clusters = int(os.getenv('n_clusters'))
@@ -123,25 +125,26 @@ def process_clustering_model(data, model, model_name, rute_model, n_clusters=Non
 
     # Procesar los datos de entrenamiento, validación y prueba
     process_model(data, labels, model_name, rute_model,
-                  centroids, data_type="train")
+                  centroids, data_type="clear")
 
-    # Procesar datos de validación
-    validation_data_path = extract_data_path('validation_data.csv')
-    validation_data = load_data(validation_data_path)
-    labels_v, centroids = get_labels_and_centroids_predict(
-        model_name, model, validation_data, n_clusters)
-    process_model(validation_data, labels_v, model_name,
-                  rute_model, centroids, data_type="validation")
+    # # Procesar datos de validación
+    # validation_data_path = extract_data_path('validation_data.csv')
+    # validation_data = load_data(validation_data_path)
+    # labels_v, centroids = get_labels_and_centroids_predict(
+    #     model_name, model, validation_data, n_clusters)
+    # process_model(validation_data, labels_v, model_name,
+    #               rute_model, centroids, data_type="validation")
 
-    # Procesar datos de prueba
-    test_data_path = extract_data_path('test_data.csv')
-    test_data = load_data(test_data_path)
-    labels_t, centroids = get_labels_and_centroids_predict(
-        model_name, model, test_data, n_clusters)
-    process_model(test_data, labels_t, model_name,
-                  rute_model, centroids, data_type="test")
+    # # Procesar datos de prueba
+    # test_data_path = extract_data_path('test_data.csv')
+    # test_data = load_data(test_data_path)
+    # labels_t, centroids = get_labels_and_centroids_predict(
+    #     model_name, model, test_data, n_clusters)
+    # process_model(test_data, labels_t, model_name,
+    #               rute_model, centroids, data_type="test")
 
-    return labels, labels_v, labels_t
+    # return labels, labels_v, labels_t
+    return labels
 
 
 def model_clustering():
@@ -149,7 +152,7 @@ def model_clustering():
     Entrena, evalúa y visualiza varios modelos de clustering (GMM, Spectral Clustering, Agglomerative y MiniBatchKMeans).
     """
     # Ruta del archivo de datos y carga
-    data_path = extract_data_path('train_data.csv')
+    data_path = extract_data_path('clear_data.csv')
     train_data = load_data(data_path)
 
     # Obtener parámetros de entorno
@@ -177,13 +180,17 @@ def model_clustering():
     # Procesar cada modelo
     models_results = {}  # Initialize this variable to store results
     for model_name, model in models.items():
-        labels, labels_t, labels_v = process_clustering_model(
+        # labels, labels_t, labels_v = process_clustering_model(
+        #     train_data, model, model_name, model_rute[model_name])
+        # models_results[model_name] = labels
+
+        labels = process_clustering_model(
             train_data, model, model_name, model_rute[model_name])
         models_results[model_name] = labels
 
     # Visualizar el método del codo (solo para datos de entrenamiento)
     df.plot_elbow_method(train_data.values, max_clusters=10,
-                          name_img="elbow_method.png")
+                         name_img="elbow_method.png")
 
     print("\nModelado de Clustering completado.\n")
 

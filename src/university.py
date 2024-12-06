@@ -15,7 +15,6 @@ from logging_config import get_logger
 logger = get_logger()
 load_dotenv()
 
-
 def extract_data_path(name_file):
     """
     Extrae la ruta completa de un archivo de datos usando variables de entorno.
@@ -31,7 +30,7 @@ def create_directory(rute_model):
     Crea el directorio necesario para guardar los resultados del modelo.
     """
     directory_proyect = os.getcwd()
-    for dr in ['images', 'data']:
+    for dr in ['images']:
         directory = os.path.normpath(os.path.join(
             directory_proyect, f"{dr}/{rute_model}"))
         if not os.path.exists(directory):
@@ -39,6 +38,11 @@ def create_directory(rute_model):
             logger.info(f"Directorio creado: {directory}")
     return directory
 
+def prepar_data():
+    # Ruta del archivo de datos y carga
+    clear_path = extract_data_path('kmeans/clear_data.csv')
+    clear_data = load_data(clear_path)
+    df.divie_data(clear_data)
 
 def random_forest_model():
 
@@ -50,14 +54,16 @@ def random_forest_model():
     df.validate_env_variables('random_state')
     random_state = int(os.getenv('random_state'))
 
+    create_directory('forest')
+
     # Ruta del archivo de datos y carga
-    train_path = extract_data_path('kmeans/train_data.csv')
+    train_path = extract_data_path('train_data.csv')
     train_data = load_data(train_path)
 
     x_train = train_data[['total_day_minutes', 'total_evening_minutes', 'total_night_minutes']]
     y_train = train_data['Cluster']
 
-    valid_path = extract_data_path('kmeans/validation_data.csv')
+    valid_path = extract_data_path('validation_data.csv')
     validation_data = load_data(valid_path)
 
     x_validation = validation_data[['total_day_minutes', 'total_evening_minutes', 'total_night_minutes']]
@@ -114,7 +120,7 @@ def random_forest_model():
     plt.grid(True)
 
     # Guardar la imagen
-    plt.savefig(df.create_image_path("roc_curve.png"))
+    plt.savefig(df.create_image_path("forest/roc_curve.png"))
 
     # Mostrar la curva ROC
     plt.show()
@@ -128,26 +134,27 @@ def random_forest_model():
     plt.xlabel("Clase Predicha")
     plt.ylabel("Clase Real")
     # Guardar la imagen
-    plt.savefig(df.create_image_path("confusion_matrix.png"))
+    plt.savefig(df.create_image_path("forest/confusion_matrix.png"))
 
     # Mostrar la curva ROC
     plt.show()
 
 
 def linear_regression_model():
-
     # Obtener parámetros de entorno
     df.validate_env_variables('random_state')
     random_state = int(os.getenv('random_state'))
 
+    create_directory('regression')
+
     # Ruta del archivo de datos y carga
-    train_path = extract_data_path('kmeans/train_data.csv')
+    train_path = extract_data_path('train_data.csv')
     train_data = load_data(train_path)
 
     x_train = train_data[['total_day_minutes', 'total_evening_minutes', 'total_night_minutes']]
     y_train = train_data['Cluster']
 
-    valid_path = extract_data_path('kmeans/validation_data.csv')
+    valid_path = extract_data_path('validation_data.csv')
     validation_data = load_data(valid_path)
 
     x_validation = validation_data[['total_day_minutes', 'total_evening_minutes', 'total_night_minutes']]
@@ -177,11 +184,14 @@ def linear_regression_model():
     plt.ylabel('Predicciones')
     plt.legend()
     plt.grid(True)
-    plt.savefig(df.create_image_path("mse_graph.png"))
+    plt.savefig(df.create_image_path("regression/mse_graph.png"))
     plt.show()
 
 def main():
-    #random_forest_model()
+    prepar_data()
+
+
+    random_forest_model()
     linear_regression_model()
 
 if __name__ == "__main__":
