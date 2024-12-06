@@ -145,7 +145,7 @@ print(f"Silhouette Score para MiniBatchKMeans: {sil_score}")
 ```
 
 ## **9. Comparación de resultados**
-1. Compara los resultados de ambos modelos utilizando las métricas clave:
+1. Compara los resultados de los modelos utilizando las métricas clave:
    - **K-Means**: Silhouette Score, Inertia.
    - **GMM**: AIC o BIC.
    - **Spectral**: Silhouette Score.
