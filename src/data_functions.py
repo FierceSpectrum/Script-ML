@@ -97,6 +97,8 @@ def filter_columns(data):
             raise ValueError(
                 f"Las siguientes columnas necesarias no están en los datos: {missing_columns}")
 
+        # df = df[df['cancelled'] != 'si']
+
         # Eliminar la primera columna y filtrar por las columnas necesarias
         return data[required_columns]
 
@@ -421,24 +423,6 @@ def main():
         save_data(train_data, train_path)  # 65% de los datos
         save_data(validation_data, val_path)  # 30% de los datos
         save_data(test_data, test_path)  # 5% de los datos
-
-        # Cargar datos
-        datos = load_data(os.getenv('file_data3'))
-
-        # Filtrar columnas
-        datos = filter_columns(datos)
-
-        # Dividir datos
-        train_data2, validation_data2, test_data2 = split_data(datos)
-
-        train_path2 = create_data_path('train_data2.csv')
-        val_path2 = create_data_path('validation_data2.csv')
-        test_path2 = create_data_path('test_data2.csv')
-
-        # Guardar cada conjunto en archivos separados
-        save_data(train_data2, train_path2)  # 65% de los datos
-        save_data(validation_data2, val_path2)  # 30% de los datos
-        save_data(test_data2, test_path2)  # 5% de los datos
 
         # Confirmación final
         logger.info("Proceso de división de datos completado exitosamente")
