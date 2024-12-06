@@ -4,7 +4,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
-from matplotlib.patches import Ellipse
 import seaborn as sns
 from sklearn.decomposition import PCA
 
@@ -75,62 +74,60 @@ pca = PCA(n_components=2)
 train_data_pca = pca.fit_transform(train_data_scaled)
 
 
-def draw_ellipse(x, y, ax, edgecolor):
-    cov = np.cov(x, y)
-    mean = np.mean(x), np.mean(y)
-    eigvals, eigvecs = np.linalg.eigh(cov)
-    angle = np.degrees(np.arctan2(*eigvecs[:, 0][::-1]))
-    width, height = 2 * np.sqrt(eigvals)
-    ellipse = Ellipse(
-        xy=mean,
-        width=width,
-        height=height,
-        angle=angle,
-        edgecolor=edgecolor,
-        facecolor="none",  # Sin relleno
-        linestyle="--",
+# Extrae las variables más importantes de cada componente principal
+def get_top_features(pca, num_features=2, feature_names=None):
+    components = pca.components_
+    feature_names = (
+        feature_names
+        if feature_names is not None
+        else [f"Variable {i+1}" for i in range(components.shape[1])]
     )
-    ax.add_patch(ellipse)
+    top_features = []
+    for i in range(components.shape[0]):  # Itera por cada componente principal
+        indices = np.argsort(np.abs(components[i]))[-num_features:][
+            ::-1
+        ]  # Ordena por importancia
+        top_features.append([feature_names[j] for j in indices])
+    return top_features
+
+
+# Supongamos que train_data_scaled es un DataFrame
+feature_names = (
+    train_data_scaled.columns if hasattr(train_data_scaled, "columns") else None
+)
+top_features = get_top_features(pca, feature_names=feature_names)
+
+# Construye el título dinámicamente
+pca1_features = ", ".join(top_features[0])
+pca2_features = ", ".join(top_features[1])
+title = f"Clusters (PCA1: {pca1_features}, PCA2: {pca2_features})"
 
 
 def plot_clusters(data, labels, title="Clusters"):
     unique_labels = set(labels)
-    colors = [plt.cm.tab10(each) for each in np.linspace(0, 1, len(unique_labels))]
-    markersize = 10
-
-    plt.figure(figsize=(10, 7))
+    colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
     for k, col in zip(unique_labels, colors):
+        if k == -1:  # Ruido
+            col = [0, 0, 1, 1]
+
         class_member_mask = labels == k
         xy = data[class_member_mask]
-
-        if k == -1:  # Ruido
-            col = [0.5, 0.5, 0.5, 1]
-            plt.plot(
-                xy[:, 0],
-                xy[:, 1],
-                "x",
-                markeredgecolor="k",
-                alpha=0.8,
-                markersize=markersize + 2,
-            )
-        else:
-            plt.plot(
-                xy[:, 0],
-                xy[:, 1],
-                "o",
-                markerfacecolor=tuple(col),
-                markeredgecolor="k",
-                alpha=0.6,
-                markersize=markersize,
-            )
-            draw_ellipse(xy[:, 0], xy[:, 1], plt.gca(), tuple(col))
+        plt.plot(
+            xy[:, 0],
+            xy[:, 1],
+            "o",
+            markerfacecolor=tuple(col),
+            markeredgecolor="k",
+            markersize=10,
+        )
 
     plt.title(title)
-    plt.xlabel("Componente PCA 1")
-    plt.ylabel("Componente PCA 2")
-    plt.legend(loc="best")
-    plt.savefig(f"images/{title.replace(' ', '_')}.png")
-    print(f"Imagen {title.replace(' ', '_')} creada")
+    plt.xlabel(pca1_features)
+    plt.ylabel(pca2_features)
+    image_path = "images/" + title.replace(" ", "_")
+    plt.savefig(image_path)
+    # plt.show()
+    print(f"Imagen {title} creada")
 
 
 plot_clusters(train_data_pca, train_labels, title="Clusters en Datos de Entrenamiento")
