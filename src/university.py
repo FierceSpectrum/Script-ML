@@ -140,6 +140,30 @@ def random_forest_model():
     plt.show()
 
 
+    print("\nEjecutando datos de prueba\n")
+    test_path = extract_data_path('test_data.csv')
+    test_data = load_data(test_path)
+
+    x_test = test_data[['total_day_minutes', 'total_evening_minutes', 'total_night_minutes']]
+    y_test = test_data['Cluster']
+
+    forest_predictions = forest_model.predict(x_test)
+    forest_predictions_prob = forest_model.predict_proba(x_test)
+
+
+    accuracy = accuracy_score(y_test, forest_predictions)
+    roc_auc = roc_auc_score(y_test, forest_predictions_prob, multi_class="ovr")
+    class_rep = classification_report(y_test, forest_predictions)
+
+    print("\n Evaluación del Modelo: Bosque Aleatorio \n")
+    print(f"\nPrecisión del modelo (Accuracy): {accuracy:.4f}\n")
+    print(f"AUC del modelo: {roc_auc:.4f}")
+    print("\nInforme de Clasificación:")
+    print(class_rep)
+
+
+
+
 def linear_regression_model():
     # Obtener parámetros de entorno
     df.validate_env_variables('random_state')
@@ -187,11 +211,25 @@ def linear_regression_model():
     plt.savefig(df.create_image_path("regression/mse_graph.png"))
     plt.show()
 
+    test_path = extract_data_path('test_data.csv')
+    test_data = load_data(test_path)
+
+    x_test = train_data[['total_day_minutes', 'total_evening_minutes', 'total_night_minutes']]
+    y_test = train_data['Cluster']
+
+    linear_test = linear_model.predict(x_test)
+
+    mse = mean_squared_error(y_test, linear_test)
+    r2 = r2_score(y_test, linear_test)
+
+    print(f"Error cuadrático medio (MSE): {mse:.4f}")
+    print(f"R2 Score: {r2:.4f}")
+
+
 def main():
     prepar_data()
 
-
-    random_forest_model()
+    #random_forest_model()
     linear_regression_model()
 
 if __name__ == "__main__":
